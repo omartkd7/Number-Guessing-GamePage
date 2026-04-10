@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guess</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Number Guessing Game</h1>
+        <p class="subtitle">Guess a number between 1 and 100:</p>
+
+        <div class="input-row">
+            <input type="number" id="guessInput" min="1" max="100" placeholder="Enter your guess">
+            <button onclick="checkGuess()">Submit Guess</button>
+        </div>
+
+        <p id="message"></p>
+
+        <button id="playAgainBtn" onclick="resetGame()">Play Again</button>
+
+        <ul id="historyList" class="history-list"></ul>
+
+        <ul class="rules">
+            <li>A random number is generated between 1 and 100.</li>
+            <li>Input your guess and click Submit.</li>
+            <li>You'll be told if your guess is too high, too low, or correct.</li>
+            <li>Your number of attempts is shown when you win.</li>
+        </ul>
+    </div>
+
+    <script>
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+
+        function checkGuess() {
+            const input = document.getElementById('guessInput');
+            const message = document.getElementById('message');
+            const userGuess = parseInt(input.value);
+
+            if (!userGuess || userGuess < 1 || userGuess > 100) {
+                message.textContent = 'Please enter a number between 1 and 100.';
+                message.className = 'msg-toohigh';
+                return;
+            }
+
+            attempts++;
+            addToHistory(userGuess);
+
+            if (userGuess === randomNumber) {
+                message.textContent = `Correct! You guessed it in ${attempts} attempt${attempts === 1 ? '' : 's'}.`;
+                message.className = 'msg-correct';
+                input.classList.add('input-win');
+                document.getElementById('playAgainBtn').style.display = 'inline-block';
+                input.disabled = true;
+            } else if (userGuess < randomNumber) {
+                message.textContent = 'Too low! Try again.';
+                message.className = 'msg-toolow';
+            } else {
+                message.textContent = 'Too high! Try again.';
+                message.className = 'msg-toohigh';
+            }
+
+            input.value = '';
+            input.focus();
+        }
+
+        function addToHistory(guess) {
+            const list = document.getElementById('historyList');
+            const item = document.createElement('li');
+            item.textContent = `Attempt ${attempts}: ${guess}`;
+            list.appendChild(item);
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+
+            const input = document.getElementById('guessInput');
+            input.value = '';
+            input.disabled = false;
+            input.classList.remove('input-win');
+
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = '';
+            document.getElementById('historyList').innerHTML = '';
+            document.getElementById('playAgainBtn').style.display = 'none';
+
+            input.focus();
+        }
+
+        document.getElementById('guessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkGuess();
+        });
+    </script>
+
+</body>
+
+</html>
